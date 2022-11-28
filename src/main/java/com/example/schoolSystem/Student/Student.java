@@ -1,11 +1,12 @@
 package com.example.schoolSystem.Student;
 
 import com.example.schoolSystem.Teacher.Teacher;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Table
@@ -21,21 +22,22 @@ public class Student {
     private String email;
     private String course;
     @ManyToMany(mappedBy = "students", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JsonBackReference
     @Fetch(FetchMode.SUBSELECT)
-    private Set<Teacher> teachers;
+    @JsonIgnore
+    private Set<Teacher> teachers = new HashSet<>();
 
     public Student() {
     }
 
-    public Student(String firstName, String lastName, int age, String email, String course, Set<Teacher> teachers) {
+    public Student(String firstName, String lastName, int age, String email, String course) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.email = email;
         this.course = course;
-        this.teachers = teachers;
     }
+
+
 
     public Long getId() {
         return id;
@@ -91,5 +93,19 @@ public class Student {
 
     public void setTeachers(Set<Teacher> teachers) {
         this.teachers = teachers;
+    }
+
+    public void addTeacher(Teacher teacher){
+        this.teachers.add(teacher);
+        teacher.getStudents().add(this);
+    }
+
+    public void removeTeacher(long teacherId){
+        Teacher teacher = this.teachers.stream().filter(t -> t.getId() == teacherId).findFirst().orElse(null);
+        if(teacher != null){
+            this.teachers.remove(teacher);
+            teacher.getStudents().remove(this);
+        }
+
     }
 }

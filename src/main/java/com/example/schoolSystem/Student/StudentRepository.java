@@ -8,11 +8,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long > {
+//    @Query("SELECT s FROM Student s WHERE ?1 is null OR s.firstName LIKE CONCAT('%',?1,'%') AND ?2 is null OR s.lastName LIKE CONCAT('%',?2,'%')")
+
     @Query( "SELECT s" +
             " FROM Student s" +
-            " WHERE (?1 is null OR LOWER(s.firstName) = ?1)" +
-            " AND (?2 is null OR LOWER(s.lastName) = ?2)"
+            " WHERE (?1 is null OR LOWER(s.firstName) = LOWER(?1))" +
+            " AND (?2 is null OR LOWER(s.lastName) = LOWER(?2))"
     )
     Page<Student> findByName(String firstName, String lastName,
                              Pageable pageable);
 }
+
+

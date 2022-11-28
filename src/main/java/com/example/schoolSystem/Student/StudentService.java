@@ -1,6 +1,7 @@
 package com.example.schoolSystem.Student;
 
 import com.example.schoolSystem.Teacher.Teacher;
+import com.example.schoolSystem.Teacher.TeacherService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,21 +14,17 @@ import java.util.Set;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final TeacherService teacherService;
 
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, TeacherService teacherService) {
         this.studentRepository = studentRepository;
+        this.teacherService = teacherService;
     }
 
     public Page<Student> getAllStudents(Pageable pageable){
         return studentRepository.findAll(pageable);
     }
     public Page<Student> searchByName(String firstName, String lastName, Pageable pageable) {
-        if(firstName != null){
-            firstName = firstName.toLowerCase();
-        }
-        if(lastName != null){
-            lastName = lastName.toLowerCase();
-        }
         return studentRepository.findByName(firstName, lastName, pageable);
     }
 
@@ -51,6 +48,14 @@ public class StudentService {
         return student.getTeachers();
     }
 
+    public void connectTeacherAndStudent(Long teacherId, Long studentId){
+        teacherService.connectTeacherAndStudent(teacherId, studentId);
+    }
+
+    public void disconnectTeacherAndStudent(Long teacherId, Long studentId) {
+        teacherService.disconnectTeacherAndStudent(teacherId, studentId);
+    }
+
     // private methods
     private Student fetchStudentIfExists(Long id){
         return studentRepository.findById(id).orElseThrow(
@@ -64,4 +69,6 @@ public class StudentService {
         updatedStudent.setEmail(details.getEmail());
         updatedStudent.setCourse(details.getCourse());
     }
+
+
 }

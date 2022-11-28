@@ -2,11 +2,10 @@ package com.example.schoolSystem.Teacher;
 
 
 import com.example.schoolSystem.Student.Student;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Table
@@ -28,23 +27,17 @@ public class Teacher {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     @Fetch(FetchMode.SUBSELECT)
-    @JsonBackReference
-    private Set<Student> students;
+    private Set<Student> students = new HashSet<>();
 
     public Teacher() {
     }
 
-    public Teacher(String firstName, String lastName, int age, String email, String subjectTaught, Set<Student> students) {
+    public Teacher(String firstName, String lastName, int age, String email, String subjectTaught) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.email = email;
         this.subjectTaught = subjectTaught;
-        this.students = students;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
     }
 
     public Long getId() {
@@ -97,5 +90,22 @@ public class Teacher {
 
     public void setStudents(Set<Student> students) {
         this.students = students;
+    }
+
+    public Set<Student> getStudents() {
+        return students;
+    }
+
+    public void addStudent(Student student){
+        this.students.add(student);
+        student.getTeachers().add(this);
+    }
+
+    public void removeStudent(long studentId){
+        Student student = this.students.stream().filter(s -> s.getId() == studentId).findFirst().orElse(null);
+        if(student != null){
+            this.students.remove(student);
+            student.getTeachers().remove(this);
+        }
     }
 }

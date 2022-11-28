@@ -2,9 +2,8 @@ package com.example.schoolSystem.Teacher;
 
 
 import com.example.schoolSystem.GenericPersonController;
-import com.example.schoolSystem.Student.Student;
-import com.example.schoolSystem.Student_Teacher.StudentTeacherService;
-import com.example.schoolSystem.dto.MapperTeacher;
+import com.example.schoolSystem.dto.Mapper;
+import com.example.schoolSystem.dto.StudentDTO;
 import com.example.schoolSystem.dto.TeacherDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,44 +12,43 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "school/api/v1/teachers")
 public class TeacherController implements GenericPersonController<TeacherDTO> {
 
     private final TeacherService teacherService;
-    private final StudentTeacherService studentTeacherService;
-    private final MapperTeacher mapperTeacher;
+    private final Mapper mapper;
 
-    public TeacherController(TeacherService teacherService, StudentTeacherService studentTeacherService, MapperTeacher mapperTeacher) {
+    public TeacherController(TeacherService teacherService, Mapper mapper) {
         this.teacherService = teacherService;
-        this.studentTeacherService = studentTeacherService;
-        this.mapperTeacher = mapperTeacher;
+        this.mapper = mapper;
     }
 
     @GetMapping
     public Page<TeacherDTO> getAll(Pageable pageable){
-        return teacherService.getAllTeachers(pageable).map(mapperTeacher::toDTO);
+        return teacherService.getAllTeachers(pageable).map(mapper::toTeacherDto);
     }
 
     @GetMapping(path = "/search")
     public Page<TeacherDTO> searchByName(@RequestParam(required = false) String firstName,
                                          @RequestParam(required = false) String lastName,
                                          Pageable pageable){
-        return teacherService.searchBy(firstName, lastName, pageable).map(mapperTeacher::toDTO);
+        return teacherService.searchBy(firstName, lastName, pageable).map(mapper::toTeacherDto);
     }
 
     @PostMapping
     public TeacherDTO create(@RequestBody @Valid TeacherDTO dto){
-        Teacher entity = teacherService.createTeacher(mapperTeacher.toTeacher(dto));
-        return mapperTeacher.toDTO(entity);
+        Teacher entity = teacherService.createTeacher(mapper.toTeacherEntity(dto));
+        return mapper.toTeacherDto(entity);
     }
 
     @PutMapping(path = "/{id}")
     public TeacherDTO editDetails(@PathVariable Long id,
                                   @RequestBody @Valid TeacherDTO dto){
-        Teacher entity = teacherService.editTeacherDetails(id, mapperTeacher.toTeacher(dto));
-        return mapperTeacher.toDTO(entity);
+        Teacher entity = teacherService.editTeacherDetails(id, mapper.toTeacherEntity(dto));
+        return mapper.toTeacherDto(entity);
     }
 
     @DeleteMapping(path = "/{id}")
@@ -59,20 +57,20 @@ public class TeacherController implements GenericPersonController<TeacherDTO> {
     }
 
     @GetMapping(path = "/{teacherId}/students")
-    public Set<Student> getStudentListForTeacher(@PathVariable Long teacherId){
-        return teacherService.getStudentList(teacherId);
+    public Set<StudentDTO> getStudentListForTeacher(@PathVariable Long teacherId){
+        return teacherService.getStudentList(teacherId).stream().map(mapper::toStudentDto).collect(Collectors.toSet());
     }
 
     @PutMapping(path = "/{teacherId}/students/{studentId}")
     public ResponseEntity<String> addStudentToTeacher(@PathVariable Long teacherId,
                                                       @PathVariable Long studentId){
-        studentTeacherService.connectTeacherAndStudent(teacherId, studentId);
-        return ResponseEntity.ok("sucess");
+        teacherService.connectTeacherAndStudent(teacherId, studentId);
+        return ResponseEntity.ok("Successfully connected student and teacher");
     }
 
     @DeleteMapping(path = "/{teacherId}/students/{studentId}")
     public void deleteStudentFromTeacher(@PathVariable Long teacherId,
                                          @PathVariable Long studentId){
-        studentTeacherService.disconnectTeacherAndStudent(teacherId, studentId);
+        teacherService.disconnectTeacherAndStudent(teacherId, studentId);
     }
 }

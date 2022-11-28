@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     @Query( "SELECT t" +
             " FROM Teacher t" +
-            " WHERE (?1 is null OR LOWER(t.firstName) = ?1)" +
-            " AND (?2 is null OR LOWER(t.lastName) = ?2)"
+            " WHERE (?1 is null OR LOWER(t.firstName) = LOWER(?1))" +
+            " AND (?2 is null OR LOWER(t.lastName) = LOWER(?2))"
     )
     Page<Teacher> findByName(String firstName, String lastName,
                                          Pageable pageable);

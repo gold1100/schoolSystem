@@ -1,6 +1,7 @@
 package com.example.schoolSystem.Teacher;
 
 import com.example.schoolSystem.Student.Student;
+import com.example.schoolSystem.Student.StudentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,11 @@ import java.util.Set;
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
 
-    public TeacherService(TeacherRepository teacherRepository) {
+    public TeacherService(TeacherRepository teacherRepository, StudentRepository studentRepository) {
         this.teacherRepository = teacherRepository;
+        this.studentRepository = studentRepository;
     }
 
 
@@ -24,12 +27,6 @@ public class TeacherService {
     }
 
     public Page<Teacher> searchBy(String firstName, String lastName, Pageable pageable) {
-        if(firstName != null){
-            firstName = firstName.toLowerCase();
-        }
-        if(lastName != null){
-            lastName = lastName.toLowerCase();
-        }
         return teacherRepository.findByName(firstName, lastName, pageable);
     }
 
@@ -53,10 +50,29 @@ public class TeacherService {
         return teacher.getStudents();
     }
 
+    public void connectTeacherAndStudent(Long teacherId, Long studentId){
+        Student student = fetchStudentIfExists(studentId);
+        Teacher teacher = fetchTeacherIfExist(teacherId);
+        teacher.addStudent(student);
+        teacherRepository.save(teacher);
+    }
+
+    public void disconnectTeacherAndStudent(Long teacherId, Long studentId) {
+        Teacher teacher = fetchTeacherIfExist(teacherId);
+        teacher.removeStudent(studentId);
+        teacherRepository.save(teacher);
+    }
+
+
     // private methods
     private Teacher fetchTeacherIfExist(Long id){
         return teacherRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher with id" + id + " doesn't exist"));
+    }
+
+    private Student fetchStudentIfExists(Long id){
+        return studentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id" + id + " doesn't exist"));
     }
 
     private void updateTeacherObj(Teacher updatedTeacher, Teacher details){
