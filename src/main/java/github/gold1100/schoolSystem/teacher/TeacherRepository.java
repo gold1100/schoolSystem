@@ -1,4 +1,4 @@
-package com.example.schoolSystem.Teacher;
+package github.gold1100.schoolSystem.teacher;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

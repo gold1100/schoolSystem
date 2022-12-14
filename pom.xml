@@ -8,11 +8,11 @@
 		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
+	<groupId>github.gold1100</groupId>
 	<artifactId>schoolSystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>schoolSystem</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Toy Project</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -29,7 +29,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.6.13</version>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

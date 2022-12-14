@@ -1,9 +1,6 @@
-package com.example.schoolSystem.Student;
+package github.gold1100.schoolSystem.student;
 
-import com.example.schoolSystem.Teacher.Teacher;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import github.gold1100.schoolSystem.teacher.Teacher;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -22,10 +19,7 @@ public class Student {
     private String email;
     private String course;
     @ManyToMany(mappedBy = "students", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @Fetch(FetchMode.SUBSELECT)
-    @JsonIgnore
     private Set<Teacher> teachers = new HashSet<>();
-
     public Student() {
     }
 
@@ -95,17 +89,5 @@ public class Student {
         this.teachers = teachers;
     }
 
-    public void addTeacher(Teacher teacher){
-        this.teachers.add(teacher);
-        teacher.getStudents().add(this);
-    }
 
-    public void removeTeacher(long teacherId){
-        Teacher teacher = this.teachers.stream().filter(t -> t.getId() == teacherId).findFirst().orElse(null);
-        if(teacher != null){
-            this.teachers.remove(teacher);
-            teacher.getStudents().remove(this);
-        }
-
-    }
 }

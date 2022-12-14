@@ -1,9 +1,8 @@
-package com.example.schoolSystem.Teacher;
+package github.gold1100.schoolSystem.teacher;
 
 
-import com.example.schoolSystem.Student.Student;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import github.gold1100.schoolSystem.student.Student;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +25,6 @@ public class Teacher {
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @Fetch(FetchMode.SUBSELECT)
     private Set<Student> students = new HashSet<>();
 
     public Teacher() {

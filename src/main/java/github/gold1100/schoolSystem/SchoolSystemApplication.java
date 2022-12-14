@@ -1,4 +1,4 @@
-package com.example.schoolSystem;
+package github.gold1100.schoolSystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

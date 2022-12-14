@@ -1,10 +1,6 @@
-package com.example.schoolSystem.dto;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+package github.gold1100.schoolSystem.student;
 
 import javax.validation.constraints.*;
-import java.util.HashSet;
-import java.util.Set;
 
 public class StudentDTO {
     private Long id;
@@ -20,20 +16,17 @@ public class StudentDTO {
     @Email
     private String email;
     private String course;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Set<TeacherDTO> teachers = new HashSet<>();
 
     public StudentDTO() {
     }
 
-    public StudentDTO(Long id, String firstName, String lastName, int age, String email, String course, Set<TeacherDTO> teachers) {
+    public StudentDTO(Long id, String firstName, String lastName, int age, String email, String course) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.email = email;
         this.course = course;
-        this.teachers = teachers;
     }
 
     public Long getId() {
@@ -82,13 +75,5 @@ public class StudentDTO {
 
     public void setCourse(String course) {
         this.course = course;
-    }
-
-    public Set<TeacherDTO> getTeachers() {
-        return teachers;
-    }
-
-    public void setTeachers(Set<TeacherDTO> teachers) {
-        this.teachers = teachers;
     }
 }
